@@ -6,8 +6,7 @@ use openai_flows::{
 };
 use store_flows::{get, set};
 use flowsnet_platform_sdk::logger;
-use std::env;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 #[no_mangle]
 #[tokio::main(flavor = "current_thread")]
@@ -15,18 +14,12 @@ pub async fn run() -> anyhow::Result<()> {
     logger::init();
     let telegram_token = std::env::var("telegram_token").unwrap();
     let placeholder_text = std::env::var("placeholder").unwrap_or("Typing ...".to_string());
-    log::info!("Before read");
-    let base_path = Path::new(file!()).parent().unwrap().to_owned();
-    let relative_path = Path::new("./prompts/system_prompt.md");
-    let path = base_path.join(relative_path).canonicalize().unwrap();
 
-    if path.exists() {
-        log::info!("File exists!");
-    } else {
-        log::info!("File does not exist!");
-    }
-    const SYSTEM_PROMPT: &[u8] = include_bytes!("../prompts/system_prompt.md");
-    let system_prompt = std::fs::read_to_string("prompts/system_prompt.md")?.trim().to_string();// failed here
+    const SYSTEM_PROMPT_BYTES: &[u8] = include_bytes!("../prompts/system_prompt.md");
+    let system_prompt = std::str::from_utf8(SYSTEM_PROMPT_BYTES)
+        .map_err(|e| anyhow::anyhow!("Failed to convert byte array to string: {}", e))?
+        .trim()
+        .to_string();
     let help_mesg = std::env::var("help_mesg").unwrap_or("I am your assistant on Telegram. Ask me any question! To start a new conversation, type the /restart command.".to_string());
     log::info!("Start");
     listen_to_update(&telegram_token, |update| {
