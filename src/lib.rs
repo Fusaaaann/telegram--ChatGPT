@@ -15,7 +15,7 @@ pub async fn run() -> anyhow::Result<()> {
     let telegram_token = std::env::var("telegram_token").unwrap();
     let placeholder_text = std::env::var("placeholder").unwrap_or("Typing ...".to_string());
     log::info!("Before read");
-    let path = Path::new("prompts/system_prompt.md");
+    let path = Path::new("../prompts/system_prompt.md");
 
     if path.exists() {
         log::info!("File exists!");
