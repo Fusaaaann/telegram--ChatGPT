@@ -15,7 +15,6 @@ pub async fn run() -> anyhow::Result<()> {
     let placeholder_text = std::env::var("placeholder").unwrap_or("Typing ...".to_string());
     let system_prompt = std::fs::read_to_string("prompts/system_prompt.md")?.trim().to_string();
     let help_mesg = std::env::var("help_mesg").unwrap_or("I am your assistant on Telegram. Ask me any question! To start a new conversation, type the /restart command.".to_string());
-
     listen_to_update(&telegram_token, |update| {
         let tele = Telegram::new(telegram_token.to_string());
         handler(tele, &placeholder_text, &system_prompt, &help_mesg, update)
@@ -83,5 +82,8 @@ async fn handler(tele: Telegram, placeholder_text: &str, system_prompt: &str, he
                 }
             }
         }
+    }
+    else {
+        log::error!("handler failed to run");
     }
 }
