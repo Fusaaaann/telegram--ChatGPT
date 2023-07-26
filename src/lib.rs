@@ -13,7 +13,7 @@ pub async fn run() -> anyhow::Result<()> {
     logger::init();
     let telegram_token = std::env::var("telegram_token").unwrap();
     let placeholder_text = std::env::var("placeholder").unwrap_or("Typing ...".to_string());
-    let system_prompt = std::env::var("system_prompt").unwrap_or(std::fs::read_to_string("prompts/system_prompt.md")?.trim().to_string());
+    let system_prompt = std::fs::read_to_string("prompts/system_prompt.md")?.trim().to_string();
     let help_mesg = std::env::var("help_mesg").unwrap_or("I am your assistant on Telegram. Ask me any question! To start a new conversation, type the /restart command.".to_string());
 
     listen_to_update(&telegram_token, |update| {
