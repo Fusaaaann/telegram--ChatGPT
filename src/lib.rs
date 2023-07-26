@@ -6,7 +6,8 @@ use openai_flows::{
 };
 use store_flows::{get, set};
 use flowsnet_platform_sdk::logger;
-use std::path::Path;
+use std::env;
+use std::path::{Path, PathBuf};
 
 #[no_mangle]
 #[tokio::main(flavor = "current_thread")]
@@ -15,7 +16,9 @@ pub async fn run() -> anyhow::Result<()> {
     let telegram_token = std::env::var("telegram_token").unwrap();
     let placeholder_text = std::env::var("placeholder").unwrap_or("Typing ...".to_string());
     log::info!("Before read");
-    let path = Path::new("../prompts/system_prompt.md");
+    let base_path = Path::new(file!()).parent().unwrap().to_owned();
+    let relative_path = Path::new("./prompts/system_prompt.md");
+    let path = base_path.join(relative_path).canonicalize().unwrap();
 
     if path.exists() {
         log::info!("File exists!");
