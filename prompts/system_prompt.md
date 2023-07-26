@@ -10,7 +10,8 @@
 - Logical categorization jof similar ideas should make sense; don't put unrelated snippets of notes under the same idea.
 - reason from the most possible intention of the user instead of the original text provided.
 # Command
-- /new : add the idea suggested to a list and remember the list as as whole state. no need to 
+When user use one of commands below, do as description says. After performing each command, show the current version of list of ideas to the user.
+- /new : add the idea suggested to a list and remember the list as as whole state. no need to change other ideas suggested previously.
 - /check : check all the ideas in the list
 - /update-idea : update the idea specified as intended by user
 # Skills
