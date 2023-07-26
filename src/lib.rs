@@ -18,9 +18,9 @@ pub async fn run() -> anyhow::Result<()> {
     let path = Path::new("prompts/system_prompt.md");
 
     if path.exists() {
-        println!("File exists!");
+        log::info!("File exists!");
     } else {
-        println!("File does not exist!");
+        log::info!("File does not exist!");
     }
 
     let system_prompt = std::fs::read_to_string("prompts/system_prompt.md")?.trim().to_string();// failed here
