@@ -6,6 +6,7 @@ use openai_flows::{
 };
 use store_flows::{get, set};
 use flowsnet_platform_sdk::logger;
+use std::path::Path;
 
 #[no_mangle]
 #[tokio::main(flavor = "current_thread")]
@@ -14,7 +15,15 @@ pub async fn run() -> anyhow::Result<()> {
     let telegram_token = std::env::var("telegram_token").unwrap();
     let placeholder_text = std::env::var("placeholder").unwrap_or("Typing ...".to_string());
     log::info!("Before read");
-    let system_prompt = std::fs::read_to_string("prompts/system_prompt.md")?.trim().to_string();
+    let path = Path::new("prompts/system_prompt.md");
+
+    if path.exists() {
+        println!("File exists!");
+    } else {
+        println!("File does not exist!");
+    }
+
+    let system_prompt = std::fs::read_to_string("prompts/system_prompt.md")?.trim().to_string();// failed here
     let help_mesg = std::env::var("help_mesg").unwrap_or("I am your assistant on Telegram. Ask me any question! To start a new conversation, type the /restart command.".to_string());
     log::info!("Start");
     listen_to_update(&telegram_token, |update| {
