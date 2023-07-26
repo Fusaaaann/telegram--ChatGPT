@@ -67,12 +67,12 @@ async fn handler(tele: Telegram, placeholder_text: &str, system_prompt: &str, he
                 co.restart = true;
             }
             // TODO
-            /**
-            if text is start with command, fill text(remove the command part) into command-specific template
-                get parsed action
-                call operation using parsed action
-            else reply with help, don't call openai
-            */
+            
+            // if text is start with command, fill text(remove the command part) into command-specific template
+                // get parsed action
+                // call operation using parsed action
+            // else reply with help, don't call openai
+            
             match openai.chat_completion(&chat_id.to_string(), &text, &co).await {
                 Ok(r) => {
                     _ = tele.edit_message_text(chat_id, placeholder.id, r.choice);
