@@ -78,11 +78,11 @@ async fn handler(tele: Telegram, placeholder_text: &str, system_prompt: &str, he
             if text.starts_with("/new") {
                 let command_text = &text[4..];
                 let prompt_text = form_prompt_new_idea(command_text);
-                text = prompt_text.unwrap();
+                text = &prompt_text.unwrap();
             } else if text.starts_with("/update") {
                 let command_text = &text[7..];
                 let prompt_text = form_prompt_update_idea(command_text);
-                text = prompt_text.unwrap();
+                text = &prompt_text.unwrap();
             } else {
                 // let the user freely chat with the LLM
             }
