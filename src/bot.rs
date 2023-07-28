@@ -82,7 +82,7 @@ async fn handler(tele: Telegram, placeholder_text: &str, system_prompt: &str, he
                 let command_text = &text[7..];
                 form_prompt_update_idea(command_text)
             } else {
-                text
+                text.to_string()
             };
             match openai.chat_completion(&chat_id.to_string(), &text_ref, &co).await {
                 Ok(r) => {

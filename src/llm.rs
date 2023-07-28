@@ -1,9 +1,9 @@
-pub fn get_prompt_from_bytes(prompt_bytes: &[u8]) -> Result<String, anyhow::Error> {
+pub fn get_prompt_from_bytes(prompt_bytes: &[u8]) -> String {
     let prompt = std::str::from_utf8(prompt_bytes)
         .map_err(|e| anyhow::anyhow!("Failed to convert byte array to string: {}", e))?
         .trim()
         .to_string();
-    Ok(prompt)
+    prompt
 }
 
 fn form_prompt(action_text: &str, command_content: &str) -> String {
