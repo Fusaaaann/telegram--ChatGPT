@@ -8,7 +8,7 @@ use store_flows::{get, set};
 use flowsnet_platform_sdk::logger;
 use std::path::Path;
 
-mod llm;
+use crate::llm;
 use llm::get_prompt_from_bytes;
 
 #[no_mangle]
