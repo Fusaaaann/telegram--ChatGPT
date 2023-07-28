@@ -6,10 +6,9 @@ use openai_flows::{
 };
 use store_flows::{get, set};
 use flowsnet_platform_sdk::logger;
-use std::path::Path;
 
 use crate::llm;
-use llm::get_prompt_from_bytes;
+use llm::{get_prompt_from_bytes,form_prompt_add_idea,form_prompt_update_idea};
 
 #[no_mangle]
 #[tokio::main(flavor = "current_thread")]
