@@ -78,16 +78,16 @@ async fn handler(tele: Telegram, placeholder_text: &str, system_prompt: &str, he
             if text.starts_with("/new") {
                 let command_text = &text[4..];
                 let prompt_text = form_prompt_new_idea(command_text).unwrap();
-                text = prompt_text.to_owned().as_str();
+                text = prompt_text.to_owned();
             } else if text.starts_with("/update") {
                 let command_text = &text[7..];
                 let prompt_text = form_prompt_update_idea(command_text).unwrap();
-                text = prompt_text.to_owned().as_str();
+                text = prompt_text.to_owned();
             } else {
                 // let the user freely chat with the LLM
             }
-            
-            match openai.chat_completion(&chat_id.to_string(), &text, &co).await {
+            let text_ref = text.as_str();
+            match openai.chat_completion(&chat_id.to_string(), &text_ref, &co).await {
                 Ok(r) => {
                     _ = tele.edit_message_text(chat_id, placeholder.id, r.choice);
                 }
