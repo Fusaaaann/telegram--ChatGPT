@@ -77,10 +77,10 @@ async fn handler(tele: Telegram, placeholder_text: &str, system_prompt: &str, he
             
             let text_ref = if text.starts_with("/new") {
                 let command_text = &text[4..];
-                form_prompt_new_idea(command_text)?
+                form_prompt_new_idea(command_text)
             } else if text.starts_with("/update") {
                 let command_text = &text[7..];
-                form_prompt_update_idea(command_text)?
+                form_prompt_update_idea(command_text)
             } else {
                 text
             };
