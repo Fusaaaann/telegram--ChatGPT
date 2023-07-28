@@ -18,9 +18,9 @@ pub async fn run() -> anyhow::Result<()> {
     let placeholder_text = std::env::var("placeholder").unwrap_or("Typing ...".to_string());
 
     const SYSTEM_PROMPT_BYTES: &[u8] = include_bytes!("../prompts/system_prompt.md");
-    let system_prompt : String = get_prompt_from_bytes(SYSTEM_PROMPT_BYTES).unwrap();
+    let system_prompt : String = get_prompt_from_bytes(SYSTEM_PROMPT_BYTES);
     const HELP_MESG_BYTES: &[u8] = include_bytes!("../prompts/help_mesg.md");
-    let help_mesg : String = get_prompt_from_bytes(HELP_MESG_BYTES).unwrap();
+    let help_mesg : String = get_prompt_from_bytes(HELP_MESG_BYTES);
     log::info!("Bot initialized successfully");
     listen_to_update(&telegram_token, |update| {
         let tele = Telegram::new(telegram_token.to_string());
