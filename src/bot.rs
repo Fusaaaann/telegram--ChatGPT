@@ -45,7 +45,7 @@ async fn handler(tele: Telegram, placeholder_text: &str, system_prompt: &str, he
             system_prompt: Some(system_prompt),
         };
 
-        let text = msg.text().unwrap_or("");
+        let mut text = msg.text().unwrap_or("");
         if text.eq_ignore_ascii_case("/help") {
             _ = tele.send_message(chat_id, help_mesg);
 
