@@ -8,6 +8,9 @@ use store_flows::{get, set};
 use flowsnet_platform_sdk::logger;
 use std::path::Path;
 
+mod llm;
+use llm::get_prompt_from_bytes;
+
 #[no_mangle]
 #[tokio::main(flavor = "current_thread")]
 pub async fn run() -> anyhow::Result<()> {
@@ -16,12 +19,10 @@ pub async fn run() -> anyhow::Result<()> {
     let placeholder_text = std::env::var("placeholder").unwrap_or("Typing ...".to_string());
 
     const SYSTEM_PROMPT_BYTES: &[u8] = include_bytes!("../prompts/system_prompt.md");
-    let system_prompt = std::str::from_utf8(SYSTEM_PROMPT_BYTES)
-        .map_err(|e| anyhow::anyhow!("Failed to convert byte array to string: {}", e))?
-        .trim()
-        .to_string();
-    let help_mesg = std::env::var("help_mesg").unwrap_or("I am your assistant on Telegram. Ask me any question! To start a new conversation, type the /restart command.".to_string());
-    log::info!("Start");
+    let system_prompt = get_prompt_from_bytes(SYSTEM_PROMPT_BYTES);
+    const HELP_MESG_BYTES: &[u8] = include_bytes!("../prompts/help_mesg.md");
+    let help_mesg = get_prompt_from_bytes(HELP_MESG_BYTES);
+    log::info!("Bot initialized successfully");
     listen_to_update(&telegram_token, |update| {
         let tele = Telegram::new(telegram_token.to_string());
         log::info!("Received update from {}",telegram_token.to_string());
@@ -73,19 +74,19 @@ async fn handler(tele: Telegram, placeholder_text: &str, system_prompt: &str, he
                 set(&chat_id.to_string(), json!(false), None);
                 co.restart = true;
             }
-            // TODO
-            // let my_ideas = vec!["idea1", "idea2", "idea3"]; 
-            // let current_state_str = my_ideas.join("\n"); 
-            // let output_str = format!(system_prompt, current_state=current_state_str);
             
             
-            // if text.starts_with("/command") {
-            //     let command_text = &text[8..]; // remove "/command" prefix
-            //     let parsed_action = parse_action(command_text); // parse the action from the command text
-            //     call_operation(parsed_action); // call the operation using the parsed action
-            // } else {
-            //     tele.send_message(help_mesg); // reply with help text instead of calling OpenAI
-            // }
+            if text.starts_with("/new") {
+                let command_text = &text[4..];
+                let prompt_text = form_prompt_new_idea(command_text);
+                text = prompt_text;
+            } else if text.starts_with("/update") {
+                let command_text = &text[7..];
+                let prompt_text = form_prompt_update_idea(command_text);
+                text = prompt_text;
+            } else {
+                // let the user freely chat with the LLM
+            }
             
             match openai.chat_completion(&chat_id.to_string(), &text, &co).await {
                 Ok(r) => {
