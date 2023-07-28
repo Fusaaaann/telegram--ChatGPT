@@ -12,9 +12,9 @@ fn form_prompt(action_text: &str, command_content: &str) -> Result<String, anyho
     Ok(action_prompt.replace("{action_text}", action_text).replace("{user_input}", command_content))
 }
 
-pub fn form_prompt_add_idea(command_content: &str) -> Result<String, anyhow::Error> {
-    let add_action = "add the idea provided by user";
-    Ok(form_prompt(add_action, command_content)?)
+pub fn form_prompt_new_idea(command_content: &str) -> Result<String, anyhow::Error> {
+    let new_idea_action = "add the idea provided by user";
+    Ok(form_prompt(new_idea_action, command_content)?)
 }
 
 pub fn form_prompt_update_idea(command_content: &str) -> Result<String, anyhow::Error> {
