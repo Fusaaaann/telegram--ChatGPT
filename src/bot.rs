@@ -18,9 +18,9 @@ pub async fn run() -> anyhow::Result<()> {
     let placeholder_text = std::env::var("placeholder").unwrap_or("Typing ...".to_string());
 
     const SYSTEM_PROMPT_BYTES: &[u8] = include_bytes!("../prompts/system_prompt.md");
-    let system_prompt : String = get_prompt_from_bytes(SYSTEM_PROMPT_BYTES).as_str();
+    let system_prompt : String = get_prompt_from_bytes(SYSTEM_PROMPT_BYTES).unwrap();
     const HELP_MESG_BYTES: &[u8] = include_bytes!("../prompts/help_mesg.md");
-    let help_mesg : String = get_prompt_from_bytes(HELP_MESG_BYTES).as_str();
+    let help_mesg : String = get_prompt_from_bytes(HELP_MESG_BYTES).unwrap();
     log::info!("Bot initialized successfully");
     listen_to_update(&telegram_token, |update| {
         let tele = Telegram::new(telegram_token.to_string());
@@ -78,11 +78,11 @@ async fn handler(tele: Telegram, placeholder_text: &str, system_prompt: &str, he
             if text.starts_with("/new") {
                 let command_text = &text[4..];
                 let prompt_text = form_prompt_new_idea(command_text);
-                text = prompt_text.as_str();
+                text = prompt_text.unwrap();
             } else if text.starts_with("/update") {
                 let command_text = &text[7..];
                 let prompt_text = form_prompt_update_idea(command_text);
-                text = prompt_text.as_str();
+                text = prompt_text.unwrap();
             } else {
                 // let the user freely chat with the LLM
             }
