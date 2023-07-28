@@ -45,7 +45,7 @@ async fn handler(tele: Telegram, placeholder_text: &str, system_prompt: &str, he
             system_prompt: Some(system_prompt),
         };
 
-        let mut text = msg.text().unwrap_or("");
+        let text = msg.text().unwrap_or("");
         if text.eq_ignore_ascii_case("/help") {
             _ = tele.send_message(chat_id, help_mesg);
 
@@ -75,18 +75,15 @@ async fn handler(tele: Telegram, placeholder_text: &str, system_prompt: &str, he
             }
             
             
-            if text.starts_with("/new") {
+            let text_ref = if text.starts_with("/new") {
                 let command_text = &text[4..];
-                let prompt_text = form_prompt_new_idea(command_text).unwrap();
-                text = prompt_text.to_owned();
+                form_prompt_new_idea(command_text)?
             } else if text.starts_with("/update") {
                 let command_text = &text[7..];
-                let prompt_text = form_prompt_update_idea(command_text).unwrap();
-                text = prompt_text.to_owned();
+                form_prompt_update_idea(command_text)?
             } else {
-                // let the user freely chat with the LLM
-            }
-            let text_ref = text.as_str();
+                text
+            };
             match openai.chat_completion(&chat_id.to_string(), &text_ref, &co).await {
                 Ok(r) => {
                     _ = tele.edit_message_text(chat_id, placeholder.id, r.choice);
