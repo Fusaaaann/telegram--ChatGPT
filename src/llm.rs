@@ -8,16 +8,16 @@ pub fn get_prompt_from_bytes(prompt_bytes: &[u8]) -> Result<String, anyhow::Erro
 
 fn form_prompt(action_text: &str, command_content: &str) -> String {
     let ACTION_PROMPT_BYTES: &[u8] = include_bytes!("../prompts/action_text.md");
-    let action_prompt = get_prompt_from_bytes(ACTION_PROMPT_BYTES)?;
-    Ok(action_prompt.replace("{action_text}", action_text).replace("{user_input}", command_content))
+    let action_prompt = get_prompt_from_bytes(ACTION_PROMPT_BYTES);
+    action_prompt.replace("{action_text}", action_text).replace("{user_input}", command_content))
 }
 
 pub fn form_prompt_new_idea(command_content: &str) -> String {
     let new_idea_action = "add the idea provided by user";
-    Ok(form_prompt(new_idea_action, command_content)?)
+    form_prompt(new_idea_action, command_content))
 }
 
 pub fn form_prompt_update_idea(command_content: &str) -> String {
     let update_action = "update the corresponding idea intended by user";
-    Ok(form_prompt(update_action, command_content)?)
+    form_prompt(update_action, command_content))
 }
