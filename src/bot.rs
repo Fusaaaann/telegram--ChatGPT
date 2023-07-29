@@ -93,7 +93,7 @@ async fn handler(tele: Telegram, placeholder_text: &str, system_prompt: &str, he
                         }
                         _ = tele.edit_message_text(chat_id, placeholder.id, result);
                     } else {
-                        _ = tele.edit_message_text(chat_id, placeholder.id, r);
+                        _ = tele.edit_message_text(chat_id, placeholder.id, result);
                     }
                 }
                 Err(e) => {
