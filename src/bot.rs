@@ -89,7 +89,7 @@ async fn handler(tele: Telegram, placeholder_text: &str, system_prompt: &str, he
                     let mut result = r.choice;
                     if let Some(suffix) = result.strip_prefix("Result:") {
                         if suffix.starts_with('\n') {
-                            result = &suffix[1..];
+                            result = (&suffix[1..]).to_string();
                         }
                         _ = tele.edit_message_text(chat_id, placeholder.id, result);
                     } else {
