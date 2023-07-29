@@ -86,7 +86,7 @@ async fn handler(tele: Telegram, placeholder_text: &str, system_prompt: &str, he
             };
             match openai.chat_completion(&chat_id.to_string(), &text_ref, &co).await {
                 Ok(r) => {
-                    let mut result = r;
+                    let mut result = r.choice;
                     if let Some(suffix) = result.strip_prefix("Result:") {
                         if suffix.starts_with('\n') {
                             result = &suffix[1..];
