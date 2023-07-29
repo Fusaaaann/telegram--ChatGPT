@@ -86,7 +86,15 @@ async fn handler(tele: Telegram, placeholder_text: &str, system_prompt: &str, he
             };
             match openai.chat_completion(&chat_id.to_string(), &text_ref, &co).await {
                 Ok(r) => {
-                    _ = tele.edit_message_text(chat_id, placeholder.id, r.choice);
+                    let mut result = r;
+                    if let Some(suffix) = result.strip_prefix("Result:") {
+                        if suffix.starts_with('\n') {
+                            result = &suffix[1..];
+                        }
+                        _ = tele.edit_message_text(chat_id, placeholder.id, result);
+                    } else {
+                        _ = tele.edit_message_text(chat_id, placeholder.id, r);
+                    }
                 }
                 Err(e) => {
                     _ = tele.edit_message_text(chat_id, placeholder.id, "Sorry, an error has occured. Please try again later!");
