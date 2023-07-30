@@ -6,18 +6,20 @@ pub fn get_prompt_from_bytes(prompt_bytes: &[u8]) -> String {
     prompt
 }
 
-fn form_prompt(action_text: &str, command_content: &str) -> String {
+fn form_prompt(action_text: &str, command_content: &str, current_state: &str) -> String {
     let ACTION_PROMPT_BYTES: &[u8] = include_bytes!("../prompts/action_text.md");
     let action_prompt = get_prompt_from_bytes(ACTION_PROMPT_BYTES);
-    action_prompt.replace("{action_text}", action_text).replace("{user_input}", command_content)
+    action_prompt.replace("{action_text}", action_text)
+        .replace("{user_input}", command_content)
+        .replace("{current_state}", current_state)
 }
 
-pub fn form_prompt_new_idea(command_content: &str) -> String {
+pub fn form_prompt_new_idea(command_content: &str,current_state: &str) -> String {
     let new_idea_action = "add the idea provided by user";
-    form_prompt(new_idea_action, command_content)
+    form_prompt(new_idea_action, command_content, current_state)
 }
 
-pub fn form_prompt_update_idea(command_content: &str) -> String {
+pub fn form_prompt_update_idea(command_content: &str, current_state: &str) -> String {
     let update_action = "update the corresponding idea intended by user";
-    form_prompt(update_action, command_content)
+    form_prompt(update_action, command_content, current_state)
 }

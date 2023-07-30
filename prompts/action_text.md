@@ -2,7 +2,6 @@
 Currently, the ideas previously suggested are:
 ```
 {current_state}
-
 ```
 This is what user said, you need to {action_text}:
 ```

@@ -10,6 +10,10 @@ use flowsnet_platform_sdk::logger;
 use crate::llm;
 use llm::{get_prompt_from_bytes,form_prompt_new_idea,form_prompt_update_idea};
 
+const STATE_KEY_STR: &str = "state";
+const RESTART_KEY_STR: &str = "is_restart";
+
+
 #[no_mangle]
 #[tokio::main(flavor = "current_thread")]
 pub async fn run() -> anyhow::Result<()> {
@@ -51,36 +55,46 @@ async fn handler(tele: Telegram, placeholder_text: &str, system_prompt: &str, he
 
         } else if text.eq_ignore_ascii_case("/start") {
             _ = tele.send_message(chat_id, help_mesg);
-            set(&chat_id.to_string(), json!(true), None);
+            let mut user_data = get(&chat_id.to_string()).unwrap_or(json!({}));
+            user_data[RESTART_KEY_STR] = json!(true);
+            set(&chat_id.to_string(), user_data, None);
             log::info!("Started converstion for {}", chat_id);
 
         } else if text.eq_ignore_ascii_case("/restart") {
             _ = tele.send_message(chat_id, "Ok, I am starting a new conversation.");
-            set(&chat_id.to_string(), json!(true), None);
+            let mut user_data = get(&chat_id.to_string()).unwrap_or(json!({}));
+            user_data[RESTART_KEY_STR] = json!(true);
+            set(&chat_id.to_string(), user_data, None);
             log::info!("Restarted converstion for {}", chat_id);
-
+        } else if text.starts_with("/check") {
+            let user_data = get(&chat_id.to_string()).unwrap_or(json!({}));
+            let current_state = user_data[STATE_KEY_STR].as_str().unwrap_or("");
+            _ = tele.send_message(chat_id, format!("Your ideas so far: \n{}",current_state.clone()));
+        
         } else {
             let placeholder = tele
                 .send_message(chat_id, placeholder_text)
                 .expect("Error occurs when sending Message to Telegram");
 
-            let restart = match get(&chat_id.to_string()) {
-                Some(v) => v.as_bool().unwrap_or_default(),
-                None => false,
-            };
+                let user_data = get(&chat_id.to_string()).unwrap_or(json!({}));
+                let restart = user_data[RESTART_KEY_STR].as_bool().unwrap_or(false);
+                let current_state = user_data[STATE_KEY_STR].as_str().unwrap_or("");
+
             if restart {
                 log::info!("Detected restart = true");
-                set(&chat_id.to_string(), json!(false), None);
+                let mut user_data = get(&chat_id.to_string()).unwrap_or(json!({}));
+                user_data[RESTART_KEY_STR] = json!(false);
+                set(&chat_id.to_string(), user_data, None);
                 co.restart = true;
             }
             
             
             let text_ref = if text.starts_with("/new") {
                 let command_text = &text[4..];
-                form_prompt_new_idea(command_text)
+                form_prompt_new_idea(command_text,current_state)
             } else if text.starts_with("/update") {
                 let command_text = &text[7..];
-                form_prompt_update_idea(command_text)
+                form_prompt_update_idea(command_text,current_state)
             } else {
                 text.to_string()
             };
@@ -91,6 +105,9 @@ async fn handler(tele: Telegram, placeholder_text: &str, system_prompt: &str, he
                         if suffix.starts_with('\n') {
                             result = (&suffix[1..]).to_string();
                         }
+                        let mut user_data = get(&chat_id.to_string()).unwrap_or(json!({}));
+                        user_data[STATE_KEY_STR] = json!(result.clone());
+                        set(&chat_id.to_string(), user_data, None);
                         _ = tele.edit_message_text(chat_id, placeholder.id, result);
                     } else {
                         _ = tele.edit_message_text(chat_id, placeholder.id, result);
